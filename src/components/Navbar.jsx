@@ -1,6 +1,7 @@
 import React from 'react';
 import { 
   Headphones, 
+  FlaskConical,
   BookOpen, 
   CheckCircle2, 
   BarChart3, 
@@ -10,7 +11,8 @@ import {
   Flame, 
   Clock,
   Layers,
-  User
+  User,
+  ArrowRight
 } from 'lucide-react';
 
 export default function Navbar({ 
@@ -19,9 +21,20 @@ export default function Navbar({
   streak, 
   studyTimeSeconds, 
   studentName,
+  activeSubject,
   onOpenPrivacy,
   onBackToPortal 
 }) {
+  const isChem = activeSubject === 'chemistry';
+  const subjectName = isChem ? 'ChemiListen' : 'BioListen';
+  const subjectBadge = isChem ? 'الكيمياء بالاستماع' : 'الأحياء بالاستماع';
+  const badgeClasses = isChem 
+    ? 'bg-sky-100 text-sky-800 border-sky-300' 
+    : 'bg-emerald-100 text-emerald-800 border-emerald-300';
+  const iconGradient = isChem
+    ? 'from-sky-600 to-blue-600 shadow-sky-200'
+    : 'from-emerald-600 to-teal-500 shadow-emerald-200';
+
   const formatTime = (totalSeconds) => {
     const mins = Math.floor(totalSeconds / 60);
     const hours = Math.floor(mins / 60);
@@ -33,7 +46,7 @@ export default function Navbar({
 
   const navItems = [
     { id: 'curriculum', label: 'المنهج والدروس', icon: BookOpen },
-    { id: 'player', label: 'المشغل الصوتي', icon: Headphones },
+    { id: 'player', label: 'المشغل الصوتي', icon: isChem ? FlaskConical : Headphones },
     { id: 'practice', label: 'التدريبات والامتحانات', icon: CheckCircle2 },
     { id: 'dashboard', label: 'لوحة الأداء', icon: BarChart3 },
     { id: 'glossary', label: 'بنك المصطلحات', icon: Bookmark },
@@ -47,14 +60,14 @@ export default function Navbar({
           
           {/* Logo & Platform Info */}
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('curriculum')}>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-md shadow-emerald-200">
-              <Headphones className="w-5 h-5 animate-pulse" />
+            <div className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${iconGradient} flex items-center justify-center text-white shadow-md`}>
+              {isChem ? <FlaskConical className="w-5 h-5 animate-pulse" /> : <Headphones className="w-5 h-5 animate-pulse" />}
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-extrabold text-xl text-slate-900 tracking-tight">BioListen</span>
-                <span className="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full border border-emerald-300">
-                  الأحياء بالاستماع
+                <span className="font-extrabold text-xl text-slate-900 tracking-tight">{subjectName}</span>
+                <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${badgeClasses}`}>
+                  {subjectBadge}
                 </span>
               </div>
               <p className="text-[11px] text-slate-500 font-medium">الشهادة الثانوية العامة - القسم العلمي (ليبيا)</p>

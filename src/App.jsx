@@ -9,16 +9,27 @@ import GlossaryView from './views/GlossaryView';
 import QuestionBankView from './views/QuestionBankView';
 import PrivacySettingsModal from './components/PrivacySettingsModal';
 
-import { CURRICULUM } from './data/curriculumData';
-import { GLOSSARY_TERMS } from './data/glossaryData';
-import { QUESTIONS } from './data/questionsData';
+import { CURRICULUM as BIOLOGY_CURRICULUM } from './data/curriculumData';
+import { GLOSSARY_TERMS as BIOLOGY_GLOSSARY } from './data/glossaryData';
+import { QUESTIONS as BIOLOGY_QUESTIONS } from './data/questionsData';
+
+import { CHEMISTRY_CURRICULUM } from './data/chemistryData';
+import { CHEMISTRY_GLOSSARY } from './data/chemistryGlossary';
+import { CHEMISTRY_QUESTIONS } from './data/chemistryQuestions';
+
 import { storageService } from './services/storageService';
 
 export default function App() {
   const [activeSubject, setActiveSubject] = useState(storageService.getActiveSubject());
   const [studentName, setStudentName] = useState(storageService.getStudentName());
   const [activeTab, setActiveTab] = useState('curriculum');
-  const [currentLesson, setCurrentLesson] = useState(CURRICULUM[0]?.lessons[0] || null);
+
+  // Active curriculum dataset based on selected subject
+  const currentCurriculum = activeSubject === 'chemistry' ? CHEMISTRY_CURRICULUM : BIOLOGY_CURRICULUM;
+  const currentGlossary = activeSubject === 'chemistry' ? CHEMISTRY_GLOSSARY : BIOLOGY_GLOSSARY;
+  const currentQuestions = activeSubject === 'chemistry' ? CHEMISTRY_QUESTIONS : BIOLOGY_QUESTIONS;
+
+  const [currentLesson, setCurrentLesson] = useState(currentCurriculum[0]?.lessons[0] || null);
   const [practiceLesson, setPracticeLesson] = useState(null);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
 
@@ -45,17 +56,28 @@ export default function App() {
 
   useEffect(() => {
     refreshStorageData();
-    // Periodic refresh of study time
     const interval = setInterval(() => {
       setStudyTimeSeconds(storageService.getStudyTime());
     }, 2000);
     return () => clearInterval(interval);
   }, []);
 
+  // Update current lesson if activeSubject changes
+  useEffect(() => {
+    if (activeSubject === 'chemistry') {
+      setCurrentLesson(CHEMISTRY_CURRICULUM[0]?.lessons[0] || null);
+    } else if (activeSubject === 'biology') {
+      setCurrentLesson(BIOLOGY_CURRICULUM[0]?.lessons[0] || null);
+    }
+  }, [activeSubject]);
+
   // Subject Selection
   const handleSelectSubject = (subjectId) => {
     setActiveSubject(subjectId);
     storageService.setActiveSubject(subjectId);
+    const targetCurriculum = subjectId === 'chemistry' ? CHEMISTRY_CURRICULUM : BIOLOGY_CURRICULUM;
+    setCurrentLesson(targetCurriculum[0]?.lessons[0] || null);
+    setPracticeLesson(null);
     setActiveTab('curriculum');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -85,7 +107,7 @@ export default function App() {
   };
 
   const handleGoToLessonById = (lessonId) => {
-    for (const u of CURRICULUM) {
+    for (const u of currentCurriculum) {
       const match = u.lessons.find(l => l.id === lessonId);
       if (match) {
         setCurrentLesson(match);
@@ -131,6 +153,7 @@ export default function App() {
           streak={streak}
           studyTimeSeconds={studyTimeSeconds}
           studentName={studentName}
+          activeSubject={activeSubject}
           onOpenPrivacy={() => setIsPrivacyOpen(true)}
           onBackToPortal={handleBackToPortal}
         />
@@ -148,12 +171,12 @@ export default function App() {
           />
         )}
 
-        {/* When Biology is active */}
-        {activeSubject === 'biology' && (
+        {/* When a subject is active */}
+        {activeSubject && (
           <>
             {activeTab === 'curriculum' && (
               <CurriculumView
-                curriculum={CURRICULUM}
+                curriculum={currentCurriculum}
                 completedLessons={completedLessons}
                 lessonMasteries={lessonMasteries}
                 onSelectLesson={handleSelectLesson}
@@ -173,8 +196,8 @@ export default function App() {
 
             {activeTab === 'practice' && (
               <PracticeView
-                curriculum={CURRICULUM}
-                questions={QUESTIONS}
+                curriculum={currentCurriculum}
+                questions={currentQuestions}
                 initialLesson={practiceLesson}
                 onGoToLesson={handleGoToLessonById}
                 onRecordAttempt={handleRecordAttempt}
@@ -183,7 +206,7 @@ export default function App() {
 
             {activeTab === 'dashboard' && (
               <DashboardView
-                curriculum={CURRICULUM}
+                curriculum={currentCurriculum}
                 completedLessons={completedLessons}
                 studyTimeSeconds={studyTimeSeconds}
                 streak={streak}
@@ -197,7 +220,7 @@ export default function App() {
 
             {activeTab === 'glossary' && (
               <GlossaryView
-                terms={GLOSSARY_TERMS}
+                terms={currentGlossary}
                 savedTerms={savedTerms}
                 onToggleSaveTerm={handleToggleSaveTerm}
                 onGoToLesson={handleGoToLessonById}
@@ -206,14 +229,14 @@ export default function App() {
 
             {activeTab === 'questions' && (
               <QuestionBankView
-                questions={QUESTIONS}
-                curriculum={CURRICULUM}
+                questions={currentQuestions}
+                curriculum={currentCurriculum}
                 attempts={attempts}
                 savedQuestions={savedQuestions}
                 onToggleSaveQuestion={handleToggleSaveQuestion}
                 onGoToLesson={handleGoToLessonById}
                 onPracticeQuestion={(q) => {
-                  setPracticeLesson(CURRICULUM[0]?.lessons[0]);
+                  setPracticeLesson(currentCurriculum[0]?.lessons[0]);
                   setActiveTab('practice');
                 }}
               />
@@ -234,7 +257,7 @@ export default function App() {
       <footer className="bg-white border-t border-slate-200 py-6 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div className="flex items-center gap-2 font-bold text-slate-700">
-            <span>EduListen / BioListen • منصة الاستماع الذكية للثانوية العامة</span>
+            <span>EduListen • منصة الاستماع الذكية للثانوية العامة</span>
             <span className="text-slate-300">|</span>
             <span className="font-normal text-slate-500">مناهج التعليم الثانوي (القسم العلمي - ليبيا)</span>
           </div>

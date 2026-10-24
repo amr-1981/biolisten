@@ -42,19 +42,21 @@ export const SUBJECTS_CONFIG = [
     id: 'chemistry',
     name: 'الكيمياء',
     enName: 'Chemistry',
-    grade: 'الشهادة الثانوية (القسم العلمي)',
-    curriculum: 'المنهج الليبي الرسمي',
-    description: 'الكيمياء العضوية، الكيمياء الفيزيائية، الاتزان الكيميائي، والتحليل الكيميائي مع شروحات صوتية مبسطة وتجارب معملية.',
+    grade: 'السنة الثالثة من مرحلة التعليم الثانوي (القسم العلمي)',
+    curriculum: 'المنهج الليبي الرسمي المعتمد 2025 - 2026م',
+    description: 'شامل لكتاب الطالب بالكامل (الجدول الدوري، الفلزات، استخلاص الفلزات، الألكانات والألكينات، النفط، مشتقات الهيدروكربونات، والبوليمرات) + كراسة النشاط العملي مع شروحات صوتية عامية مصرية محبوبة.',
     icon: FlaskConical,
     color: 'sky',
     gradient: 'from-sky-600 to-blue-700',
-    borderColor: 'border-slate-200',
-    badge: 'قريباً جداً',
-    badgeColor: 'bg-slate-100 text-slate-600 border-slate-300',
-    available: false,
+    borderColor: 'border-sky-300',
+    badge: 'متاح ومفعل بالكامل',
+    badgeColor: 'bg-sky-100 text-sky-800 border-sky-300',
+    available: true,
     stats: {
-      units: 5,
-      status: 'قيد إعداد المحتوى الصوتي'
+      units: 8,
+      lessons: 16,
+      terms: 25,
+      hasPractical: true
     }
   },
   {
