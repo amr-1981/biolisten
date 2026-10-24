@@ -15,9 +15,14 @@ import { storageService } from '../services/storageService';
 export default function GlossaryView({ 
   terms, 
   savedTerms, 
+  activeSubject,
   onToggleSaveTerm, 
   onGoToLesson 
 }) {
+  const isChem = activeSubject === 'chemistry' || (terms[0]?.id && terms[0].id.startsWith('chem'));
+  const subjectName = isChem ? 'الكيمياء' : 'الأحياء';
+  const termTypeLabel = isChem ? 'مصطلحاً كيميائياً' : 'مصطلحاً بيولوجياً';
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedUnit, setSelectedUnit] = useState('all');
   const [showSavedOnly, setShowSavedOnly] = useState(false);
@@ -45,14 +50,16 @@ export default function GlossaryView({
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">
+            <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
+              isChem ? 'text-sky-800 bg-sky-100' : 'text-emerald-800 bg-emerald-100'
+            }`}>
               القاموس العلمي المعتمد
             </span>
-            <span className="text-xs text-slate-500 font-semibold">{terms.length} مصطلحاً بيولوجياً</span>
+            <span className="text-xs text-slate-500 font-semibold">{terms.length} {termTypeLabel}</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900">بنك المصطلحات العلمية للأحياء</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900">بنك المصطلحات العلمية لـ{subjectName}</h1>
           <p className="text-xs sm:text-sm text-slate-600 mt-1">
-            استمع للنطق الدقيق والتعريف المعتمد لكل مصطلح علمي ورد في كتاب الأحياء للثانوية العامة مع رقم الصفحة والمثال.
+            استمع للنطق الدقيق والتعريف المعتمد لكل مصطلح علمي ورد في كتاب {subjectName} ومسرد الوزارة للثانوية العامة مع رقم الصفحة والمثال.
           </p>
         </div>
 

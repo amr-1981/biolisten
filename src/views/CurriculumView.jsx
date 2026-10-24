@@ -14,29 +14,48 @@ export default function CurriculumView({
   curriculum, 
   completedLessons, 
   lessonMasteries, 
+  activeSubject,
   onSelectLesson, 
   onStartPractice 
 }) {
+  const isChem = activeSubject === 'chemistry' || (curriculum[0]?.id && curriculum[0].id.startsWith('chem'));
+  const subjectName = isChem ? 'الكيمياء' : 'الأحياء';
+  const unitsCountText = isChem 
+    ? '8 وحدات دراسية رسمية + كراسة التدريبات والنشاط العملي'
+    : '6 وحدات دراسية رسمية + كراسة العملي والتدريبات';
+
+  const heroGradient = isChem
+    ? 'from-sky-900 via-blue-900 to-slate-900'
+    : 'from-emerald-800 via-teal-800 to-slate-900';
+
+  const badgeTheme = isChem
+    ? 'bg-sky-500/20 border-sky-400/30 text-sky-300'
+    : 'bg-emerald-500/20 border-emerald-400/30 text-emerald-300';
+
+  const textColor = isChem ? 'text-sky-100' : 'text-emerald-100';
+  const iconColor = isChem ? 'text-sky-400' : 'text-emerald-400';
+  const glowBg = isChem ? 'bg-sky-500/10' : 'bg-emerald-500/10';
+
   return (
     <div className="space-y-8 max-w-7xl mx-auto pb-12">
       
       {/* Hero Banner */}
-      <div className="bg-gradient-to-r from-emerald-800 via-teal-800 to-slate-900 rounded-3xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden">
+      <div className={`bg-gradient-to-r ${heroGradient} rounded-3xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden`}>
         <div className="relative z-10 max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-bold mb-4">
+          <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full ${badgeTheme} text-xs font-bold mb-4`}>
             <Sparkles className="w-3.5 h-3.5" />
             المنهج الرسمي المعتمد • طبعة 2025 - 2026م
           </div>
           <h1 className="text-3xl sm:text-4xl font-black text-white leading-tight mb-3">
-            تعلّم علم الأحياء بالاستماع الذكي
+            تعلّم علم {subjectName} بذكاء
           </h1>
-          <p className="text-emerald-100 text-sm sm:text-base leading-relaxed font-normal">
-            اختر وحدتك أو درسك واستمع لشروحات صوتية واضحة ومكثفة باللغة العربية الفصحى مبنية بدقة على كتاب الأحياء وكراسة التدريبات لوزارة التربية والتعليم الليبية، ثم عزز فهمك بالتمارين الوزارية الحقيقية.
+          <p className={`${textColor} text-sm sm:text-base leading-relaxed font-normal`}>
+            اختر وحدتك أو درسك واستمع لشروحات صوتية واضحة ومكثفة باللهجة المصرية العامية المبسطة مبنية بدقة على كتاب {subjectName} وكراسة التدريبات والنشاط العملي لوزارة التربية والتعليم الليبية، ثم عزز فهمك بالتمارين الوزارية الحقيقية.
           </p>
           <div className="flex flex-wrap gap-4 mt-6 text-xs text-slate-300">
             <span className="flex items-center gap-1.5 bg-black/20 px-3 py-1.5 rounded-xl border border-white/10">
-              <BookOpen className="w-4 h-4 text-emerald-400" />
-              6 وحدات دراسية رسمية + كراسة العملي
+              <BookOpen className={`w-4 h-4 ${iconColor}`} />
+              {unitsCountText}
             </span>
             <span className="flex items-center gap-1.5 bg-black/20 px-3 py-1.5 rounded-xl border border-white/10">
               <Headphones className="w-4 h-4 text-teal-400" />
@@ -50,7 +69,7 @@ export default function CurriculumView({
         </div>
 
         {/* Decorative circle glow */}
-        <div className="absolute -left-20 -bottom-20 w-80 h-80 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
+        <div className={`absolute -left-20 -bottom-20 w-80 h-80 rounded-full ${glowBg} blur-3xl pointer-events-none`} />
       </div>
 
       {/* Units List */}

@@ -23,9 +23,12 @@ export default function DashboardView({
   attempts, 
   lessonMasteries,
   studentName,
+  activeSubject,
   onGoToLesson,
   onStartPractice
 }) {
+  const isChem = activeSubject === 'chemistry' || (curriculum[0]?.id && curriculum[0].id.startsWith('chem'));
+  const subjectName = isChem ? 'الكيمياء' : 'الأحياء';
   // Compute real metrics strictly from student activities
   const totalLessonsCount = curriculum.reduce((acc, u) => acc + u.lessons.length, 0);
   const completedLessonsCount = completedLessons.length;
@@ -111,7 +114,7 @@ export default function DashboardView({
             <span className="text-xs text-slate-500 font-semibold">مبنية 100% على بياناتك الحقيقية</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900">
-            {studentName ? `سجل تحصيل وإنجاز الطالب: ${studentName}` : 'سجل تحصيلك في مادة الأحياء'}
+            {studentName ? `سجل تحصيل وإنجاز الطالب: ${studentName}` : `سجل تحصيلك في مادة ${subjectName}`}
           </h1>
           <p className="text-xs sm:text-sm text-slate-600 mt-1">
             نظام التقييم لا يعرض أي أرقام عشوائية؛ كل مؤشر هنا نابع من جلسات استماعك واختباراتك الفعلية المسجلة.

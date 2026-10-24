@@ -28,8 +28,10 @@ export default function AudioPlayerWidget({
   mode, 
   setMode, 
   currentProgress, 
+  activeSubject,
   onLessonCompleted 
 }) {
+  const isChem = activeSubject === 'chemistry' || (lesson?.id && lesson.id.startsWith('chem'));
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [speed, setSpeed] = useState(1.0);
@@ -301,7 +303,9 @@ export default function AudioPlayerWidget({
             <span className="text-[11px] text-amber-300 font-bold bg-amber-950/60 px-2 py-0.5 rounded border border-amber-800/60">
               🗣️ الشرح بالعامية المصرية المبسطة
             </span>
-            <span className="text-xs text-slate-400">كتاب الأحياء الوزاري المعتمد</span>
+            <span className="text-xs text-slate-400">
+              {isChem ? 'كتاب الكيمياء وكراسة التدريبات والنشاط' : 'كتاب الأحياء الوزاري المعتمد'}
+            </span>
           </div>
           <h2 className="text-xl font-extrabold text-white mb-2">{lesson?.title}</h2>
           

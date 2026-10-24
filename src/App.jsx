@@ -179,6 +179,7 @@ export default function App() {
                 curriculum={currentCurriculum}
                 completedLessons={completedLessons}
                 lessonMasteries={lessonMasteries}
+                activeSubject={activeSubject}
                 onSelectLesson={handleSelectLesson}
                 onStartPractice={handleStartPractice}
               />
@@ -187,6 +188,7 @@ export default function App() {
             {activeTab === 'player' && (
               <LessonPlayerView
                 lesson={currentLesson}
+                activeSubject={activeSubject}
                 onBack={() => setActiveTab('curriculum')}
                 onStartPractice={handleStartPractice}
                 onSelectTerm={handleSelectTermFromLesson}
@@ -199,6 +201,7 @@ export default function App() {
                 curriculum={currentCurriculum}
                 questions={currentQuestions}
                 initialLesson={practiceLesson}
+                activeSubject={activeSubject}
                 onGoToLesson={handleGoToLessonById}
                 onRecordAttempt={handleRecordAttempt}
               />
@@ -213,6 +216,7 @@ export default function App() {
                 attempts={attempts}
                 lessonMasteries={lessonMasteries}
                 studentName={studentName}
+                activeSubject={activeSubject}
                 onGoToLesson={handleSelectLesson}
                 onStartPractice={() => setActiveTab('practice')}
               />
@@ -222,6 +226,7 @@ export default function App() {
               <GlossaryView
                 terms={currentGlossary}
                 savedTerms={savedTerms}
+                activeSubject={activeSubject}
                 onToggleSaveTerm={handleToggleSaveTerm}
                 onGoToLesson={handleGoToLessonById}
               />
@@ -233,6 +238,7 @@ export default function App() {
                 curriculum={currentCurriculum}
                 attempts={attempts}
                 savedQuestions={savedQuestions}
+                activeSubject={activeSubject}
                 onToggleSaveQuestion={handleToggleSaveQuestion}
                 onGoToLesson={handleGoToLessonById}
                 onPracticeQuestion={(q) => {

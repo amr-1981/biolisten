@@ -18,11 +18,14 @@ import { speech } from '../services/speechService';
 
 export default function LessonPlayerView({ 
   lesson, 
+  activeSubject,
   onBack, 
   onStartPractice, 
   onSelectTerm,
   onLessonCompleted 
 }) {
+  const isChem = activeSubject === 'chemistry' || (lesson?.id && lesson.id.startsWith('chem'));
+  const subjectName = isChem ? 'الكيمياء' : 'الأحياء';
   const [audioMode, setAudioMode] = useState(AUDIO_MODES.DETAILED);
   const [showFullTranscript, setShowFullTranscript] = useState(true);
 
@@ -87,6 +90,7 @@ export default function LessonPlayerView({
         lesson={lesson} 
         mode={audioMode} 
         setMode={setAudioMode} 
+        activeSubject={activeSubject}
         onLessonCompleted={onLessonCompleted}
       />
 
@@ -158,7 +162,7 @@ export default function LessonPlayerView({
 
                 {/* Listen to specific excerpt button */}
                 <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
-                  <span>المصدر الموثوق: كراسة التدريبات وكتاب الأحياء الوزاري - صفحات {lesson.bookPages}</span>
+                  <span>المصدر الموثوق: كتاب {subjectName} وكراسة التدريبات والنشاط العملي - صفحات {lesson.bookPages}</span>
                   <button
                     onClick={() => handleReadAloudText(lesson.summary)}
                     className="inline-flex items-center gap-1 text-emerald-700 hover:underline font-bold"
