@@ -294,9 +294,12 @@ export default function AudioPlayerWidget({
         
         {/* Lesson Info & Live Spoken Sentence */}
         <div className="flex-1 w-full">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex flex-wrap items-center gap-2 mb-1">
             <span className="text-xs text-emerald-400 font-bold bg-emerald-950/70 px-2 py-0.5 rounded border border-emerald-800">
               {lesson?.lessonNumber} • ص {lesson?.bookPages}
+            </span>
+            <span className="text-[11px] text-amber-300 font-bold bg-amber-950/60 px-2 py-0.5 rounded border border-amber-800/60">
+              🗣️ الشرح بالعامية المصرية المبسطة
             </span>
             <span className="text-xs text-slate-400">كتاب الأحياء الوزاري المعتمد</span>
           </div>

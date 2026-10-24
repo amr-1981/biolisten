@@ -68,15 +68,19 @@ class SpeechService {
         );
       });
 
-      // Default to best available Arabic voice
+      // Default to best available Arabic voice (prioritize Egyptian dialect)
       if (this.arabicVoices.length > 0 && !this.selectedVoice) {
-        // Prefer natural / online / Google voices if available
-        const preferred = this.arabicVoices.find(v => 
+        const egyptian = this.arabicVoices.find(v => 
+          (v.lang || '').toLowerCase().includes('ar-eg') ||
+          (v.name || '').toLowerCase().includes('hoda') ||
+          (v.name || '').toLowerCase().includes('egypt')
+        );
+        const natural = this.arabicVoices.find(v => 
           v.name.includes('Natural') || 
           v.name.includes('Google') || 
           v.name.includes('Online')
         );
-        this.selectedVoice = preferred || this.arabicVoices[0];
+        this.selectedVoice = egyptian || natural || this.arabicVoices[0];
       }
 
       this.notify('voicesUpdated', { 
@@ -209,15 +213,15 @@ class SpeechService {
 
     const utterance = new SpeechSynthesisUtterance(chunk);
     
-    // Configure voice & language
+    // Configure voice & language (prefer Egyptian ar-EG)
     if (this.selectedVoice) {
       utterance.voice = this.selectedVoice;
-      utterance.lang = this.selectedVoice.lang || 'ar-SA';
+      utterance.lang = this.selectedVoice.lang || 'ar-EG';
     } else if (this.arabicVoices.length > 0) {
       utterance.voice = this.arabicVoices[0];
-      utterance.lang = this.arabicVoices[0].lang || 'ar-SA';
+      utterance.lang = this.arabicVoices[0].lang || 'ar-EG';
     } else {
-      utterance.lang = 'ar-SA';
+      utterance.lang = 'ar-EG';
     }
 
     utterance.rate = this.rate;
@@ -395,7 +399,7 @@ class SpeechService {
 
   // Quick 1-click test sound
   testArabicVoice() {
-    const testText = "مرحباً بك في منصة بيولسن. الصوت العربي يعمل بوضوح تام الآن.";
+    const testText = "أهلاً بيك يا بطل! الصوت شغال تمام بلهجة مصرية عامية دارجة، يلا نبدأ نذاكر الأحياء سوا.";
     this.speak(testText);
   }
 }
