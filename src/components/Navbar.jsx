@@ -8,10 +8,20 @@ import {
   HelpCircle, 
   ShieldCheck, 
   Flame, 
-  Clock 
+  Clock,
+  Layers,
+  User
 } from 'lucide-react';
 
-export default function Navbar({ activeTab, setActiveTab, streak, studyTimeSeconds, onOpenPrivacy }) {
+export default function Navbar({ 
+  activeTab, 
+  setActiveTab, 
+  streak, 
+  studyTimeSeconds, 
+  studentName,
+  onOpenPrivacy,
+  onBackToPortal 
+}) {
   const formatTime = (totalSeconds) => {
     const mins = Math.floor(totalSeconds / 60);
     const hours = Math.floor(mins / 60);
@@ -53,6 +63,15 @@ export default function Navbar({ activeTab, setActiveTab, streak, studyTimeSecon
 
           {/* Navigation Links */}
           <nav className="hidden md:flex items-center gap-1">
+            <button
+              onClick={onBackToPortal}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold text-slate-700 hover:text-emerald-800 hover:bg-emerald-50/70 border border-transparent hover:border-emerald-200 transition-all ml-1"
+              title="العودة لصفحة اختيار المواد"
+            >
+              <Layers className="w-4 h-4 text-emerald-600" />
+              <span>المواد الدراسية</span>
+            </button>
+
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -74,7 +93,20 @@ export default function Navbar({ activeTab, setActiveTab, streak, studyTimeSecon
           </nav>
 
           {/* Student Stats & Privacy Actions */}
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3">
+            
+            {/* Student Name Greeting */}
+            {studentName ? (
+              <div 
+                onClick={onBackToPortal}
+                className="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-bold cursor-pointer transition-colors"
+                title="تعديل اسم الطالب"
+              >
+                <User className="w-3.5 h-3.5 text-emerald-600" />
+                <span>{studentName}</span>
+              </div>
+            ) : null}
+
             {/* Streak Counter */}
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold" title="أيام الدراسة المتتالية">
               <Flame className="w-4 h-4 text-amber-500 fill-amber-500" />
@@ -100,7 +132,15 @@ export default function Navbar({ activeTab, setActiveTab, streak, studyTimeSecon
         </div>
 
         {/* Mobile Navigation Bar */}
-        <div className="flex md:hidden overflow-x-auto py-2 border-t border-slate-100 gap-1 scrollbar-none">
+        <div className="flex md:hidden overflow-x-auto py-2 border-t border-slate-100 gap-1 scrollbar-none items-center">
+          <button
+            onClick={onBackToPortal}
+            className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 shrink-0"
+          >
+            <Layers className="w-3.5 h-3.5" />
+            <span>المواد</span>
+          </button>
+
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;

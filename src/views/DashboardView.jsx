@@ -22,6 +22,7 @@ export default function DashboardView({
   streak, 
   attempts, 
   lessonMasteries,
+  studentName,
   onGoToLesson,
   onStartPractice
 }) {
@@ -109,7 +110,9 @@ export default function DashboardView({
             </span>
             <span className="text-xs text-slate-500 font-semibold">مبنية 100% على بياناتك الحقيقية</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900">سجل تحصيلك في مادة الأحياء</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900">
+            {studentName ? `سجل تحصيل وإنجاز الطالب: ${studentName}` : 'سجل تحصيلك في مادة الأحياء'}
+          </h1>
           <p className="text-xs sm:text-sm text-slate-600 mt-1">
             نظام التقييم لا يعرض أي أرقام عشوائية؛ كل مؤشر هنا نابع من جلسات استماعك واختباراتك الفعلية المسجلة.
           </p>

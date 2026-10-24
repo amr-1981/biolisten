@@ -1,6 +1,8 @@
 // LocalStorage Service for real student progress without fake or random data
 
 const STORAGE_KEYS = {
+  STUDENT_NAME: 'biolisten_student_name',
+  ACTIVE_SUBJECT: 'biolisten_active_subject',
   COMPLETED_LESSONS: 'biolisten_completed_lessons',
   STUDY_TIME_SECONDS: 'biolisten_study_time_seconds',
   LAST_ACTIVE_DATE: 'biolisten_last_active_date',
@@ -12,6 +14,31 @@ const STORAGE_KEYS = {
 };
 
 export const storageService = {
+  // Student Name
+  getStudentName() {
+    return localStorage.getItem(STORAGE_KEYS.STUDENT_NAME) || '';
+  },
+
+  setStudentName(name) {
+    if (name) {
+      localStorage.setItem(STORAGE_KEYS.STUDENT_NAME, name.trim());
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.STUDENT_NAME);
+    }
+  },
+
+  // Active Subject
+  getActiveSubject() {
+    return localStorage.getItem(STORAGE_KEYS.ACTIVE_SUBJECT) || null;
+  },
+
+  setActiveSubject(subjectId) {
+    if (subjectId) {
+      localStorage.setItem(STORAGE_KEYS.ACTIVE_SUBJECT, subjectId);
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.ACTIVE_SUBJECT);
+    }
+  },
   // Lesson completion
   getCompletedLessons() {
     try {

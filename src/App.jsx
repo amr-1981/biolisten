@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
+import SubjectPortalView from './views/SubjectPortalView';
 import CurriculumView from './views/CurriculumView';
 import LessonPlayerView from './views/LessonPlayerView';
 import PracticeView from './views/PracticeView';
@@ -14,6 +15,8 @@ import { QUESTIONS } from './data/questionsData';
 import { storageService } from './services/storageService';
 
 export default function App() {
+  const [activeSubject, setActiveSubject] = useState(storageService.getActiveSubject());
+  const [studentName, setStudentName] = useState(storageService.getStudentName());
   const [activeTab, setActiveTab] = useState('curriculum');
   const [currentLesson, setCurrentLesson] = useState(CURRICULUM[0]?.lessons[0] || null);
   const [practiceLesson, setPracticeLesson] = useState(null);
@@ -30,6 +33,7 @@ export default function App() {
 
   // Load from local storage on mount
   const refreshStorageData = () => {
+    setStudentName(storageService.getStudentName());
     setCompletedLessons(storageService.getCompletedLessons());
     setStudyTimeSeconds(storageService.getStudyTime());
     setStreak(storageService.getStreak());
@@ -48,7 +52,26 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Handlers
+  // Subject Selection
+  const handleSelectSubject = (subjectId) => {
+    setActiveSubject(subjectId);
+    storageService.setActiveSubject(subjectId);
+    setActiveTab('curriculum');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleBackToPortal = () => {
+    setActiveSubject(null);
+    storageService.setActiveSubject(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSaveStudentName = (name) => {
+    storageService.setStudentName(name);
+    setStudentName(name);
+  };
+
+  // Handlers for Lesson & Practice
   const handleSelectLesson = (lesson) => {
     setCurrentLesson(lesson);
     setActiveTab('player');
@@ -100,83 +123,104 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800">
       
-      {/* Top Sticky Header */}
-      <Navbar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        streak={streak}
-        studyTimeSeconds={studyTimeSeconds}
-        onOpenPrivacy={() => setIsPrivacyOpen(true)}
-      />
+      {/* Top Sticky Header (shown when inside a subject) */}
+      {activeSubject && (
+        <Navbar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          streak={streak}
+          studyTimeSeconds={studyTimeSeconds}
+          studentName={studentName}
+          onOpenPrivacy={() => setIsPrivacyOpen(true)}
+          onBackToPortal={handleBackToPortal}
+        />
+      )}
 
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        {activeTab === 'curriculum' && (
-          <CurriculumView
-            curriculum={CURRICULUM}
-            completedLessons={completedLessons}
-            lessonMasteries={lessonMasteries}
-            onSelectLesson={handleSelectLesson}
-            onStartPractice={handleStartPractice}
+        
+        {/* Initial Portal: Subject Selection */}
+        {!activeSubject && (
+          <SubjectPortalView
+            studentName={studentName}
+            onSaveStudentName={handleSaveStudentName}
+            onSelectSubject={handleSelectSubject}
           />
         )}
 
-        {activeTab === 'player' && (
-          <LessonPlayerView
-            lesson={currentLesson}
-            onBack={() => setActiveTab('curriculum')}
-            onStartPractice={handleStartPractice}
-            onSelectTerm={handleSelectTermFromLesson}
-            onLessonCompleted={handleLessonCompleted}
-          />
+        {/* When Biology is active */}
+        {activeSubject === 'biology' && (
+          <>
+            {activeTab === 'curriculum' && (
+              <CurriculumView
+                curriculum={CURRICULUM}
+                completedLessons={completedLessons}
+                lessonMasteries={lessonMasteries}
+                onSelectLesson={handleSelectLesson}
+                onStartPractice={handleStartPractice}
+              />
+            )}
+
+            {activeTab === 'player' && (
+              <LessonPlayerView
+                lesson={currentLesson}
+                onBack={() => setActiveTab('curriculum')}
+                onStartPractice={handleStartPractice}
+                onSelectTerm={handleSelectTermFromLesson}
+                onLessonCompleted={handleLessonCompleted}
+              />
+            )}
+
+            {activeTab === 'practice' && (
+              <PracticeView
+                curriculum={CURRICULUM}
+                questions={QUESTIONS}
+                initialLesson={practiceLesson}
+                onGoToLesson={handleGoToLessonById}
+                onRecordAttempt={handleRecordAttempt}
+              />
+            )}
+
+            {activeTab === 'dashboard' && (
+              <DashboardView
+                curriculum={CURRICULUM}
+                completedLessons={completedLessons}
+                studyTimeSeconds={studyTimeSeconds}
+                streak={streak}
+                attempts={attempts}
+                lessonMasteries={lessonMasteries}
+                studentName={studentName}
+                onGoToLesson={handleSelectLesson}
+                onStartPractice={() => setActiveTab('practice')}
+              />
+            )}
+
+            {activeTab === 'glossary' && (
+              <GlossaryView
+                terms={GLOSSARY_TERMS}
+                savedTerms={savedTerms}
+                onToggleSaveTerm={handleToggleSaveTerm}
+                onGoToLesson={handleGoToLessonById}
+              />
+            )}
+
+            {activeTab === 'questions' && (
+              <QuestionBankView
+                questions={QUESTIONS}
+                curriculum={CURRICULUM}
+                attempts={attempts}
+                savedQuestions={savedQuestions}
+                onToggleSaveQuestion={handleToggleSaveQuestion}
+                onGoToLesson={handleGoToLessonById}
+                onPracticeQuestion={(q) => {
+                  setPracticeLesson(CURRICULUM[0]?.lessons[0]);
+                  setActiveTab('practice');
+                }}
+              />
+            )}
+          </>
         )}
 
-        {activeTab === 'practice' && (
-          <PracticeView
-            curriculum={CURRICULUM}
-            questions={QUESTIONS}
-            initialLesson={practiceLesson}
-            onGoToLesson={handleGoToLessonById}
-            onRecordAttempt={handleRecordAttempt}
-          />
-        )}
-
-        {activeTab === 'dashboard' && (
-          <DashboardView
-            curriculum={CURRICULUM}
-            completedLessons={completedLessons}
-            studyTimeSeconds={studyTimeSeconds}
-            streak={streak}
-            attempts={attempts}
-            lessonMasteries={lessonMasteries}
-            onGoToLesson={handleSelectLesson}
-            onStartPractice={() => setActiveTab('practice')}
-          />
-        )}
-
-        {activeTab === 'glossary' && (
-          <GlossaryView
-            terms={GLOSSARY_TERMS}
-            savedTerms={savedTerms}
-            onToggleSaveTerm={handleToggleSaveTerm}
-            onGoToLesson={handleGoToLessonById}
-          />
-        )}
-
-        {activeTab === 'questions' && (
-          <QuestionBankView
-            questions={QUESTIONS}
-            curriculum={CURRICULUM}
-            attempts={attempts}
-            savedQuestions={savedQuestions}
-            onToggleSaveQuestion={handleToggleSaveQuestion}
-            onGoToLesson={handleGoToLessonById}
-            onPracticeQuestion={(q) => {
-              setPracticeLesson(CURRICULUM[0]?.lessons[0]);
-              setActiveTab('practice');
-            }}
-          />
-        )}
       </main>
 
       {/* Privacy and Local Data Management Modal */}
@@ -190,13 +234,21 @@ export default function App() {
       <footer className="bg-white border-t border-slate-200 py-6 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div className="flex items-center gap-2 font-bold text-slate-700">
-            <span>BioListen • منصة الاستماع الذكية للأحياء</span>
+            <span>EduListen / BioListen • منصة الاستماع الذكية للثانوية العامة</span>
             <span className="text-slate-300">|</span>
-            <span className="font-normal text-slate-500">مبني حصرياً وفق المنهج الليبي المعتمد (السنة الثالثة ثانوي علمي)</span>
+            <span className="font-normal text-slate-500">مناهج التعليم الثانوي (القسم العلمي - ليبيا)</span>
           </div>
-          <div>
+          <div className="flex items-center gap-3">
+            {activeSubject && (
+              <button
+                onClick={handleBackToPortal}
+                className="text-emerald-700 hover:underline font-bold"
+              >
+                تغيير المادة الدراسية
+              </button>
+            )}
             <span className="text-emerald-700 font-semibold bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-              جميع الحقوق محفوظة للمركز الوطني للمناهج التعليمية بليبيا
+              المركز الوطني للمناهج التعليمية
             </span>
           </div>
         </div>
